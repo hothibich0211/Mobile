@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function App() {
 	const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -24,7 +25,16 @@ export default function App() {
 	};
 
 	const handleNextCard = () => {
-		setCurrentCardIndex((currentCardIndex + 1) % cards.length);
+		setCards((prevCards) => {
+			const updatedCards = [...prevCards];
+			const currentCard = updatedCards[currentCardIndex];
+			updatedCards[currentCardIndex] = {
+				...currentCard,
+				isFlipped: false,
+			};
+			setCurrentCardIndex((currentCardIndex + 1) % updatedCards.length);
+			return updatedCards;
+		});
 	};
 
 	const handlePreviousCard = () => {
@@ -32,10 +42,13 @@ export default function App() {
 	};
 
 	const handleRemoveCard = () => {
-		if (currentCardIndex >= 0 && currentCardIndex < cards.length) {
+		if (currentCardIndex >= 1 && currentCardIndex < cards.length) {
 			setCards((prevCards) => {
 				const updatedCards = [...prevCards];
 				updatedCards.splice(currentCardIndex, 1);
+				const lastIndex = updatedCards.length - 1; 
+				const newIndex = currentCardIndex > lastIndex ? lastIndex : currentCardIndex;
+				setCurrentCardIndex(newIndex); 
 				return updatedCards;
 			});
 		}
@@ -83,6 +96,16 @@ export default function App() {
 			<TouchableOpacity style={styles.Reset} onPress={handleReset}>
 				<Text style={styles.buttonReset}>Reset Deck</Text>
 			</TouchableOpacity>
+			<View style={styles.IconBottom}>
+				<View>
+					<Icon style={styles.iconRight} name="play-circle-o" size={30} color="#E94357" />
+					<Text>Play</Text>
+				</View>
+				<View>
+					<Icon style={styles.iconLeft} name="cogs" size={30} color="#E94357" />
+					<Text width={60}>Settings</Text>
+				</View>
+			</View>
 			<StatusBar style="auto" />
 		</View>
 	);
@@ -122,7 +145,7 @@ const styles = StyleSheet.create({
 	buttonPrevious: {
 		borderWidth: 2,
 		borderColor: '#fe2e54',
-		color:'#fe2e54',
+		color: '#fe2e54',
 		paddingHorizontal: 15,
 		paddingVertical: 7,
 		borderRadius: 5,
@@ -130,40 +153,49 @@ const styles = StyleSheet.create({
 	buttonNext: {
 		borderWidth: 2,
 		borderColor: '#fe2e54',
-		color:'#fe2e54',
+		color: '#fe2e54',
 		paddingHorizontal: 15,
 		paddingVertical: 7,
 		borderRadius: 5,
 	},
-	Remove:{
+	Remove: {
 		borderWidth: 2,
 		borderColor: '#fff',
-		backgroundColor:'#fff',
+		backgroundColor: '#fff',
 		paddingHorizontal: 15,
 		paddingVertical: 7,
 		borderRadius: 5,
-		width:'80%'
-	  },
-	  buttonRemove:{
+		width: '80%'
+	},
+	buttonRemove: {
 		fontSize: 14,
 		color: '#fe2e54',
 		fontWeight: 'bold',
-		textAlign:'center',
-	  },
-	  Reset:{
+		textAlign: 'center',
+	},
+	Reset: {
 		borderWidth: 2,
 		borderColor: '#fff',
-		backgroundColor:'#fff',
+		backgroundColor: '#fff',
 		paddingHorizontal: 15,
 		paddingVertical: 7,
 		borderRadius: 5,
-		top:'2%',
-		width:'80%'
-	  },
-	  buttonReset:{
+		top: '2%',
+		width: '80%'
+	},
+	buttonReset: {
 		fontSize: 14,
 		color: '#fe2e54',
 		fontWeight: 'bold',
-		textAlign:'center',
-	  },
+		textAlign: 'center',
+	},
+	IconBottom: {
+		flexDirection: 'row',
+		// backgroundColor: 'white',
+		// borderWidth: 1,
+		paddingLeft: 20,
+		paddingRight: 20,
+		padding: 40,
+		gap: 160,
+	},
 });
